@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Solar panels under a clear sky">
+  <defs>
+    <linearGradient id="aSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#2a5aa6"/>
+      <stop offset="42%" stop-color="#5e93d8"/>
+      <stop offset="78%" stop-color="#cfe3f8"/>
+      <stop offset="100%" stop-color="#eaf3fc"/>
+    </linearGradient>
+    <radialGradient id="aGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="#FFE39A" stop-opacity="0.9"/>
+      <stop offset="35%" stop-color="#EFB21E" stop-opacity="0.4"/>
+      <stop offset="75%" stop-color="#EFB21E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="aSun" cx="42%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#FFF0C2"/>
+      <stop offset="60%" stop-color="#F4C341"/>
+      <stop offset="100%" stop-color="#EAA712"/>
+    </radialGradient>
+    <linearGradient id="aPanel" x1="0" y1="0" x2="0.25" y2="1">
+      <stop offset="0%"  stop-color="#3f68b6"/>
+      <stop offset="55%" stop-color="#1B499F"/>
+      <stop offset="100%" stop-color="#12315f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="900" fill="url(#aSky)"/>
+
+  <!-- sun -->
+  <circle cx="950" cy="240" r="230" fill="url(#aGlow)"/>
+  <circle cx="950" cy="240" r="56" fill="url(#aSun)"/>
+
+  <!-- soft clouds -->
+  <g fill="#ffffff" opacity="0.5">
+    <ellipse cx="320" cy="210" rx="150" ry="34"/>
+    <ellipse cx="430" cy="235" rx="110" ry="26"/>
+    <ellipse cx="700" cy="150" rx="120" ry="26"/>
+  </g>
+
+  <!-- green field at horizon (agriculture) -->
+  <path d="M0,560 C 300,532 620,584 900,556 C 1040,542 1140,560 1200,552 L1200,640 L0,640 Z" fill="#3f7d4e"/>
+  <path d="M0,600 C 360,578 680,618 1000,596 C 1100,589 1160,600 1200,596 L1200,720 L0,720 Z" fill="#2f6b40"/>
+
+  <!-- panel array -->
+  <g>
+    <polygon points="180,600 900,500 1080,690 360,900" fill="url(#aPanel)"/>
+    <polygon points="720,525 900,500 959,563 779,597" fill="#EFB21E" opacity="0.55"/>
+    <polygon points="540,550 720,525 779,597 599,623" fill="#FFD86B" opacity="0.32"/>
+    <g stroke="#F4F1EA" stroke-opacity="0.32" stroke-width="2.5">
+      <line x1="239" y1="699" x2="959" y2="563"/>
+      <line x1="299" y1="798" x2="1019" y2="625"/>
+      <line x1="360" y1="575" x2="540" y2="847"/>
+      <line x1="540" y1="550" x2="720" y2="795"/>
+      <line x1="720" y1="525" x2="900" y2="742"/>
+    </g>
+    <line x1="180" y1="600" x2="900" y2="500" stroke="#F4F1EA" stroke-opacity="0.6" stroke-width="3"/>
+    <line x1="610" y1="700" x2="610" y2="800" stroke="#0d1d3a" stroke-width="9" stroke-linecap="round"/>
+  </g>
+</svg>
