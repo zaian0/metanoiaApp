@@ -31,7 +31,9 @@ class ArticleRequest extends FormRequest
             'category' => ['nullable', 'string', 'max:60'],
             'excerpt' => ['nullable', 'string', 'max:500'],
             'body' => ['required', 'string'],
-            'cover_image' => ['nullable', 'string', 'max:500'],
+            // Cover is uploaded as a file; remove_cover clears an existing one.
+            'cover' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:4096'],
+            'remove_cover' => ['nullable', 'boolean'],
             'author' => ['nullable', 'string', 'max:120'],
             'meta_title' => ['nullable', 'string', 'max:200'],
             'meta_description' => ['nullable', 'string', 'max:500'],

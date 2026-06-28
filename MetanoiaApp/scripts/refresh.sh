@@ -73,7 +73,11 @@ else
     log "Skipping front-end build (--skip-build)"
 fi
 
-# 4) Database
+# 4) Storage symlink (public/storage → storage/app/public) for uploaded images
+log "Linking storage"
+php artisan storage:link --force >/dev/null 2>&1 || true
+
+# 5) Database
 log "Running migrations"
 php artisan migrate --force
 

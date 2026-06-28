@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import InputError from '@/components/InputError.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 interface ArticleData {
     id: number;
@@ -47,7 +47,8 @@ const form = useForm({
     category: props.article?.category ?? '',
     excerpt: props.article?.excerpt ?? '',
     body: props.article?.body ?? '',
-    cover_image: props.article?.cover_image ?? '',
+    cover: null as File | null,
+    remove_cover: false,
     author: props.article?.author ?? '',
     meta_title: props.article?.meta_title ?? '',
     meta_description: props.article?.meta_description ?? '',
@@ -58,6 +59,24 @@ const form = useForm({
 // You can only link to a translation written in a different locale.
 const linkOptions = computed(() => props.linkable.filter((a) => a.locale !== form.locale));
 
+// Cover image upload (file, not a URL) with a live preview.
+const coverInput = ref<HTMLInputElement | null>(null);
+const coverPreview = ref<string | null>(props.article?.cover_image ?? null);
+
+const onCover = (e: Event) => {
+    const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+    form.cover = file;
+    form.remove_cover = false;
+    coverPreview.value = file ? URL.createObjectURL(file) : (props.article?.cover_image ?? null);
+};
+
+const removeCover = () => {
+    form.cover = null;
+    form.remove_cover = true;
+    coverPreview.value = null;
+    if (coverInput.value) coverInput.value.value = '';
+};
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -67,7 +86,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const submit = () => {
     if (isEdit.value && props.article) {
-        form.put(route('admin.articles.update', props.article.id));
+        // Method spoofing so the multipart upload reaches the PUT route.
+        form.transform((data) => ({ ...data, _method: 'put' })).post(route('admin.articles.update', props.article.id));
     } else {
         form.post(route('admin.articles.store'));
     }
@@ -150,9 +170,22 @@ const inputClass =
             <!-- Cover + Author -->
             <div class="grid gap-5 sm:grid-cols-2">
                 <div>
-                    <label class="mb-1.5 block text-sm font-medium">Cover image URL <span class="font-normal text-muted-foreground">(optional)</span></label>
-                    <input v-model="form.cover_image" type="text" :class="inputClass" placeholder="/images/articles/cover.jpg" />
-                    <InputError :message="form.errors.cover_image" class="mt-1" />
+                    <label class="mb-1.5 block text-sm font-medium">Cover image <span class="font-normal text-muted-foreground">(optional)</span></label>
+                    <div class="flex items-center gap-4">
+                        <div class="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-sidebar-border/70 bg-muted dark:border-sidebar-border">
+                            <img v-if="coverPreview" :src="coverPreview" alt="" class="h-full w-full object-cover" />
+                            <svg v-else class="h-6 w-6 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-5-5L5 21" /></svg>
+                        </div>
+                        <div class="flex flex-col items-start gap-1.5">
+                            <input ref="coverInput" type="file" accept="image/png,image/jpeg,image/webp" class="hidden" @change="onCover" />
+                            <button type="button" class="rounded-lg border border-sidebar-border/70 px-3 py-1.5 text-sm font-medium transition hover:bg-muted dark:border-sidebar-border" @click="coverInput?.click()">
+                                {{ coverPreview ? 'Change image' : 'Upload image' }}
+                            </button>
+                            <button v-if="coverPreview" type="button" class="text-xs text-red-600 hover:underline dark:text-red-400" @click="removeCover">Remove</button>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-xs text-muted-foreground">JPG, PNG, or WebP · up to 4 MB.</p>
+                    <InputError :message="form.errors.cover" class="mt-1" />
                 </div>
                 <div>
                     <label class="mb-1.5 block text-sm font-medium">Author</label>

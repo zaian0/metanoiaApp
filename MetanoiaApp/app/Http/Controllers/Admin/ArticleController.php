@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ArticleRequest;
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -104,6 +105,7 @@ class ArticleController extends Controller
 
     public function destroy(Article $article)
     {
+        $this->deleteCover($article->cover_image);
         $article->delete();
 
         return redirect()->route('admin.articles.index')->with('success', 'Article deleted.');
@@ -119,10 +121,28 @@ class ArticleController extends Controller
             ->map(fn (Article $a) => ['id' => $a->id, 'title' => $a->title, 'locale' => $a->locale, 'group_id' => $a->group_id]);
     }
 
+    /** Delete a previously uploaded cover image from the public disk. */
+    private function deleteCover(?string $url): void
+    {
+        if ($url && str_starts_with($url, '/storage/')) {
+            Storage::disk('public')->delete(substr($url, strlen('/storage/')));
+        }
+    }
+
     /** Normalize input: auto-slug, default publish date/author, and resolve the translation group. */
     private function payload(ArticleRequest $request, ?Article $article = null): array
     {
         $data = $request->validated();
+
+        // Cover image: store a new upload, clear it, or leave the existing one untouched.
+        unset($data['cover'], $data['remove_cover']);
+        if ($file = $request->file('cover')) {
+            $this->deleteCover($article?->cover_image);
+            $data['cover_image'] = Storage::url($file->store('articles', 'public'));
+        } elseif ($request->boolean('remove_cover')) {
+            $this->deleteCover($article?->cover_image);
+            $data['cover_image'] = null;
+        }
 
         $data['slug'] = ! empty($data['slug'])
             ? Article::uniqueSlug($data['slug'], $article?->id)
