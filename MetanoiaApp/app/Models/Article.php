@@ -33,12 +33,6 @@ class Article extends Model
         'Sustainability',
     ];
 
-    /** Use the slug for public route-model binding. */
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
-
     /** Only published articles whose publish date has arrived. */
     public function scopePublished(Builder $query): Builder
     {

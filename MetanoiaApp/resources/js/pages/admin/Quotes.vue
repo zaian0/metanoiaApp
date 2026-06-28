@@ -99,8 +99,9 @@ const statusClass: Record<string, string> = {
                     :href="link.url || undefined"
                     class="min-w-9 rounded-md border px-3 py-1.5 text-center text-sm transition"
                     :class="[link.active ? 'border-brand-blue bg-brand-blue text-white' : 'border-sidebar-border/70 hover:bg-muted dark:border-sidebar-border', !link.url && 'pointer-events-none opacity-40']"
-                    v-html="link.label"
-                />
+                >
+                    <span v-html="link.label" />
+                </component>
             </div>
         </div>
     </AppLayout>

@@ -165,3 +165,61 @@ html {
         @apply absolute -bottom-1 left-0 right-0 h-[2px] rounded-full bg-brand-yellow;
     }
 }
+
+/* ===========================================================
+   Article body — styles the Markdown HTML rendered via v-html
+   on the public article page. Brand-fixed (light only).
+   =========================================================== */
+.prose-article {
+    @apply text-[1.0625rem] leading-[1.8] text-brand-navy/90;
+}
+.prose-article > * + * {
+    @apply mt-6;
+}
+.prose-article h2 {
+    @apply mt-12 font-display text-2xl font-bold tracking-tight text-brand-navy;
+}
+.prose-article h3 {
+    @apply mt-10 font-display text-xl font-bold tracking-tight text-brand-navy;
+}
+.prose-article h4 {
+    @apply mt-8 font-display text-lg font-semibold text-brand-navy;
+}
+.prose-article p {
+    @apply text-brand-navy/90;
+}
+.prose-article a {
+    @apply font-medium text-brand-blue underline decoration-brand-blue/30 underline-offset-2 transition hover:decoration-brand-blue;
+}
+.prose-article strong {
+    @apply font-semibold text-brand-navy;
+}
+.prose-article ul {
+    @apply list-disc space-y-2 pl-6 marker:text-brand-yellow;
+}
+.prose-article ol {
+    @apply list-decimal space-y-2 pl-6 marker:text-brand-muted;
+}
+.prose-article blockquote {
+    @apply border-l-4 border-brand-yellow bg-brand-beige/60 py-2 pl-5 pr-4 font-display text-lg italic text-brand-navy;
+}
+.prose-article img {
+    @apply rounded-card border border-brand-border;
+}
+.prose-article code {
+    @apply rounded bg-brand-beige px-1.5 py-0.5 font-mono text-[0.9em] text-brand-navy;
+}
+.prose-article pre {
+    @apply overflow-x-auto rounded-card bg-brand-navy p-5 text-sm text-brand-beige;
+}
+.prose-article pre code {
+    @apply bg-transparent p-0 text-brand-beige;
+}
+.prose-article hr {
+    @apply border-brand-border;
+}
+.prose-article h2:first-child,
+.prose-article h3:first-child,
+.prose-article p:first-child {
+    @apply mt-0;
+}

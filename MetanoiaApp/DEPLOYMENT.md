@@ -213,34 +213,62 @@ numprocs=1
 
 ---
 
-## 11. SSR for SEO (optional — when enabled)
+## 11. SSR for SEO (enabled)
 
-The public marketing pages currently render client-side. To serve crawlers
-server-rendered HTML, enable Inertia SSR (`npm run build` then run the SSR node
-process under Supervisor):
+Inertia SSR is enabled — public pages (Home/About/Contact/Articles) are
+server-rendered so crawlers and link-unfurlers get full HTML, correct `<title>`,
+meta descriptions, Open Graph tags, and JSON-LD on first byte.
+
+**Build** must produce the SSR bundle as well as the client bundle:
+```bash
+npm run build:ssr     # = vite build (client) + vite build --ssr → bootstrap/ssr/ssr.js
+```
+
+**Run** the SSR node process under Supervisor (it listens on 127.0.0.1:13714):
 ```ini
 [program:metanoia-ssr]
 command=php /var/www/MetanoiaApp/artisan inertia:start-ssr
+directory=/var/www/MetanoiaApp
 user=www-data
 autostart=true
 autorestart=true
+stdout_logfile=/var/log/metanoia-ssr.log
 ```
-(SSR is a planned step — until then the site works, but public pages are JS-rendered.)
+Then `sudo supervisorctl reread && sudo supervisorctl update`.
+
+Config lives in `config/inertia.php` (`ssr.enabled = true`, url `INERTIA_SSR_URL`,
+default `http://127.0.0.1:13714`). If the SSR process is down, Inertia transparently
+falls back to client-side rendering — the site keeps working, just without
+server-rendered HTML. After each deploy, restart it: `supervisorctl restart metanoia-ssr`.
 
 ---
 
 ## 12. Redeploy (each update)
 
+One command pulls the latest code and refreshes everything (git pull → composer →
+npm build client+SSR → migrate → re-cache → restart SSR):
+
 ```bash
 cd /var/www/MetanoiaApp
 php artisan down
-git pull
-composer install --no-dev --optimize-autoloader
-npm ci && npm run build
-php artisan migrate --force
-php artisan optimize        # re-caches config/routes/views
+./scripts/refresh.sh --prod      # or: npm run refresh
 php artisan up
 ```
+
+`refresh.sh` auto-detects prod vs local from `APP_ENV`; flags: `--prod`, `--local`,
+`--skip-build` (when assets are built locally and rsynced), `--no-pull`, `--help`.
+
+<details><summary>Equivalent manual steps</summary>
+
+```bash
+git pull
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build:ssr      # builds client + SSR bundle
+php artisan migrate --force
+php artisan optimize             # re-caches config/routes/views
+sudo supervisorctl restart metanoia-ssr   # reload the SSR bundle
+```
+</details>
 
 ---
 
