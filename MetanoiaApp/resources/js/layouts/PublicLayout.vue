@@ -19,6 +19,7 @@ const nav = computed(() => [
     { label: t('nav.home'), href: localePath('home'), active: isActivePath('home') },
     { label: t('nav.about'), href: localePath('about'), active: isActivePath('about') },
     { label: t('nav.solutions'), href: solutionsHref.value, active: false },
+    { label: t('nav.products'), href: localePath('products'), active: isActivePath('products') },
     { label: t('nav.articles'), href: localePath('articles'), active: isActivePath('articles') },
     { label: t('nav.contact'), href: localePath('contact'), active: isActivePath('contact') },
 ]);
@@ -129,6 +130,7 @@ const year = new Date().getFullYear();
                             <li><Link :href="localePath('home')" class="footer-link">{{ t('nav.home') }}</Link></li>
                             <li><Link :href="localePath('about')" class="footer-link">{{ t('nav.about') }}</Link></li>
                             <li><a :href="solutionsHref" class="footer-link">{{ t('nav.solutions') }}</a></li>
+                            <li><Link :href="localePath('products')" class="footer-link">{{ t('nav.products') }}</Link></li>
                             <li><Link :href="localePath('articles')" class="footer-link">{{ t('nav.articles') }}</Link></li>
                             <li><Link :href="localePath('contact')" class="footer-link">{{ t('nav.contact') }}</Link></li>
                         </ul>

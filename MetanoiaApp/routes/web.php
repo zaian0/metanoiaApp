@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProductCategoryController as AdminProductCategoryController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\QuoteController as AdminQuoteController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +22,11 @@ $publicRoutes = function () {
     // Articles / blog
     Route::get('articles', [ArticleController::class, 'index'])->name('articles.index');
     Route::get('articles/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
+
+    // Products catalog
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('products/{category:slug}', [ProductController::class, 'category'])->name('products.category');
+    Route::get('products/{category:slug}/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 
     // Request a quote
     Route::get('quote', [QuoteController::class, 'create'])->name('quote.create');
@@ -39,6 +47,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('quotes/{quote}/status', [AdminQuoteController::class, 'updateStatus'])->name('quotes.status');
 
         Route::resource('articles', AdminArticleController::class)->except('show');
+        Route::resource('product-categories', AdminProductCategoryController::class)->except('show');
+        Route::resource('products', AdminProductController::class)->except('show');
     });
 });
 

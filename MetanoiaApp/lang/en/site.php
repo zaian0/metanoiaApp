@@ -18,6 +18,7 @@ return [
         'home' => 'Home',
         'about' => 'About',
         'solutions' => 'Solutions',
+        'products' => 'Products',
         'articles' => 'Articles',
         'contact' => 'Contact',
     ],
@@ -265,6 +266,7 @@ return [
 
         'select' => 'Select…',
         'dash' => '—',
+        'interested_in' => 'Interested in',
 
         'service_short' => [
             'supply' => 'Supply',
@@ -312,6 +314,29 @@ return [
             'title' => 'No articles yet',
             'text' => "We're working on our first insights — check back soon.",
         ],
+    ],
+
+    'products' => [
+        'meta_title' => 'Products — Solar Equipment & Components | Metanoia Energy',
+        'meta_description' => 'Browse our range of solar equipment — panels, inverters, combiner boxes, cables, circuit breakers, and solar water pumping — supplied across Egypt by Metanoia Energy.',
+
+        'header' => [
+            'eyebrow' => 'Our Products',
+            'title' => 'Quality solar equipment, supplied end-to-end',
+            'lead' => 'From panels and inverters to cables, protection, and solar water pumping — verified components you can rely on. Browse by category and request a quote.',
+        ],
+
+        'browse' => 'Browse by category',
+        'featured' => 'Featured products',
+        'all' => 'All',
+        'all_products' => 'All products',
+        'products_count' => 'products',
+        'request_quote' => 'Request a quote',
+        'specs' => 'Specifications',
+        'related' => 'Related products',
+        'in_category' => 'In this category',
+        'empty' => 'No products here yet — check back soon.',
+        'view' => 'View product',
     ],
 
     'cta' => [

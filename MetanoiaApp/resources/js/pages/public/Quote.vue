@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import { useTranslations } from '@/composables/useTranslations';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { site } from '@/lib/site';
 
 const { t, tList, localePath } = useTranslations();
+
+// Pre-fill the details when arriving from a product's "Request a quote".
+const page = usePage();
+const productParam = new URLSearchParams(page.url.split('?')[1] ?? '').get('product');
 
 const props = defineProps<{
     options: {
@@ -32,7 +36,7 @@ const form = useForm({
     monthly_bill: '',
     timeline: '',
     preferred_contact: '',
-    details: '',
+    details: productParam ? `${t('quote.interested_in')}: ${productParam}` : '',
     website: '', // honeypot
 });
 

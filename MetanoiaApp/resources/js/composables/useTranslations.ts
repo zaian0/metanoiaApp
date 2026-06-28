@@ -52,6 +52,7 @@ export function useTranslations() {
         about: '/about',
         contact: '/contact',
         articles: '/articles',
+        products: '/products',
         quote: '/quote',
     };
 
