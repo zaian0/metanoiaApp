@@ -15,7 +15,7 @@ export const site = {
 
     founderName: 'Tarek Said',
     founderRole: 'Founder & CEO',
-    founderEmail: 'tareksaid@metanoiaenergy.com',
+    founderEmail: 'tarek@metanoiaenergy.com',
 
     whatsapp: 'https://wa.me/201037444473',
     whatsappMsg:
