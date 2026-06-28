@@ -15,7 +15,16 @@ class QuoteController extends Controller
     public function create(): Response
     {
         return Inertia::render('public/Quote', [
-            'options' => QuoteRequest::options(),
+            // Option labels are localized; the stored values stay canonical (see lang/*/quote.php).
+            'options' => [
+                'salutations' => __('quote.salutations'),
+                'segments' => __('quote.segments'),
+                'services' => __('quote.services'),
+                'systemTypes' => __('quote.system_types'),
+                'monthlyBills' => __('quote.monthly_bills'),
+                'timelines' => __('quote.timelines'),
+                'contactMethods' => __('quote.contact_methods'),
+            ],
         ]);
     }
 
@@ -38,6 +47,6 @@ class QuoteController extends Controller
             Mail::to($quote->email)->send(new QuoteConfirmation($quote));
         }
 
-        return back()->with('success', 'Thanks — your request has been received. Our team will get back to you shortly.');
+        return back()->with('success', __('quote.success'));
     }
 }

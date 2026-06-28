@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import CtaSection from '@/components/marketing/CtaSection.vue';
+import { useTranslations } from '@/composables/useTranslations';
 import { Head, Link } from '@inertiajs/vue3';
 
 interface Related {
@@ -30,6 +31,8 @@ const props = defineProps<{
     };
     related: Related[];
 }>();
+
+const { t, isRtl, localePath } = useTranslations();
 
 const canonical = typeof window !== 'undefined' ? window.location.href : '';
 
@@ -62,11 +65,13 @@ const jsonLd = JSON.stringify({
             <header class="border-b border-brand-border bg-brand-beige">
                 <div class="container-x py-14 md:py-16">
                     <div class="mx-auto max-w-3xl">
-                        <Link href="/articles" class="text-sm font-medium text-brand-blue hover:underline">← All articles</Link>
+                        <Link :href="localePath('articles')" class="text-sm font-medium text-brand-blue hover:underline">
+                            {{ isRtl ? '→' : '←' }} {{ t('articles.back_to_all') }}
+                        </Link>
                         <div class="mt-5 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand-blue">
                             <span v-if="article.category">{{ article.category }}</span>
                             <span v-if="article.category" class="text-brand-border">•</span>
-                            <span class="text-brand-muted">{{ article.read_minutes }} min read</span>
+                            <span class="text-brand-muted">{{ article.read_minutes }} {{ t('articles.min_read') }}</span>
                         </div>
                         <h1 class="mt-3 font-display text-3xl font-extrabold leading-tight tracking-tight text-brand-navy md:text-[2.6rem]">
                             {{ article.title }}
@@ -97,25 +102,25 @@ const jsonLd = JSON.stringify({
         <!-- Related -->
         <section v-if="related.length" class="border-t border-brand-border bg-brand-snow">
             <div class="container-x py-16">
-                <h2 class="heading text-2xl">More from Metanoia</h2>
+                <h2 class="heading text-2xl">{{ t('articles.more_from') }}</h2>
                 <div class="mt-8 grid gap-7 md:grid-cols-3">
                     <article
                         v-for="a in related"
                         :key="a.slug"
                         class="group flex flex-col overflow-hidden rounded-card border border-brand-border bg-white transition hover:-translate-y-1 hover:shadow-lg"
                     >
-                        <Link :href="route('articles.show', a.slug)" class="block aspect-[16/9] overflow-hidden">
+                        <Link :href="localePath('articles', '/' + a.slug)" class="block aspect-[16/9] overflow-hidden">
                             <img v-if="a.cover_image" :src="a.cover_image" :alt="a.title" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                             <span v-else class="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-blue to-brand-navy-soft">
                                 <img src="/brand/sun.png" alt="" class="h-12 w-12 opacity-90" />
                             </span>
                         </Link>
                         <div class="flex flex-1 flex-col p-6">
-                            <div class="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-blue">{{ a.category || 'Article' }}</div>
+                            <div class="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-blue">{{ a.category || t('nav.articles') }}</div>
                             <h3 class="font-display text-base font-bold leading-snug text-brand-navy">
-                                <Link :href="route('articles.show', a.slug)" class="transition hover:text-brand-blue">{{ a.title }}</Link>
+                                <Link :href="localePath('articles', '/' + a.slug)" class="transition hover:text-brand-blue">{{ a.title }}</Link>
                             </h3>
-                            <p class="mt-3 text-xs text-brand-muted">{{ a.published_at }} · {{ a.read_minutes }} min read</p>
+                            <p class="mt-3 text-xs text-brand-muted">{{ a.published_at }} · {{ a.read_minutes }} {{ t('articles.min_read') }}</p>
                         </div>
                     </article>
                 </div>

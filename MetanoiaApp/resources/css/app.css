@@ -167,6 +167,21 @@ html {
 }
 
 /* ===========================================================
+   Arabic typography — Tajawal for display + body when the
+   document is Arabic / RTL (fonts are loaded in app.blade.php).
+   =========================================================== */
+[lang='ar'] body,
+[dir='rtl'] body {
+    font-family: 'Tajawal', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+[lang='ar'] .font-display,
+[lang='ar'] .font-body,
+[dir='rtl'] .font-display,
+[dir='rtl'] .font-body {
+    font-family: 'Tajawal', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ===========================================================
    Article body — styles the Markdown HTML rendered via v-html
    on the public article page. Brand-fixed (light only).
    =========================================================== */

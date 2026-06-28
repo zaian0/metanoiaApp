@@ -29,7 +29,7 @@ watch(() => flash()?.error, (m) => m && push('error', m), { immediate: true });
 </script>
 
 <template>
-    <div class="pointer-events-none fixed right-4 top-20 z-[100] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2">
+    <div class="pointer-events-none fixed end-4 top-20 z-[100] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2">
         <transition-group name="toast">
             <div
                 v-for="t in toasts"

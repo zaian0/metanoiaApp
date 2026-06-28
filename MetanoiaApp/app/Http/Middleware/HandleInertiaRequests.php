@@ -55,6 +55,12 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            // i18n: active locale, text direction, and the active locale's UI strings.
+            // Lazy closures so they resolve AFTER the SetLocale route middleware runs
+            // (share() is evaluated before route-group middleware).
+            'locale' => fn () => app()->getLocale(),
+            'direction' => fn () => app()->getLocale() === 'ar' ? 'rtl' : 'ltr',
+            'translations' => fn () => trans('site'),
         ]);
     }
 }

@@ -21,6 +21,8 @@ class ArticleRequest extends FormRequest
         $articleId = $this->route('article')?->id;
 
         return [
+            'locale' => ['required', Rule::in(array_keys(Article::LOCALES))],
+            'translate_of' => ['nullable', 'integer', 'exists:articles,id'],
             'title' => ['required', 'string', 'max:200'],
             'slug' => [
                 'nullable', 'string', 'max:220', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',

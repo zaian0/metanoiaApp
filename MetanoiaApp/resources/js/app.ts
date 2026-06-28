@@ -1,6 +1,6 @@
 import '../css/app.css';
 
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
@@ -35,6 +35,15 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
+
+// Keep <html dir/lang> in sync with the active locale across SPA navigations
+// (the initial values are server-rendered in the Blade root template).
+const applyDocumentLocale = (props: Record<string, unknown> | undefined) => {
+    const el = document.documentElement;
+    el.dir = (props?.direction as string) || 'ltr';
+    el.lang = (props?.locale as string) || 'en';
+};
+router.on('navigate', (event) => applyDocumentLocale(event.detail.page.props));
 
 // This will set light / dark mode on page load...
 initializeTheme();

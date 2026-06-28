@@ -7,6 +7,8 @@ import { computed } from 'vue';
 
 interface ArticleData {
     id: number;
+    locale: string;
+    translate_of: number | null;
     title: string;
     slug: string | null;
     category: string | null;
@@ -20,15 +22,26 @@ interface ArticleData {
     published_at: string | null;
 }
 
+interface Linkable {
+    id: number;
+    title: string;
+    locale: string;
+    group_id: string | null;
+}
+
 const props = defineProps<{
     article: ArticleData | null;
     statuses: Record<string, string>;
     categories: string[];
+    locales: Record<string, string>;
+    linkable: Linkable[];
 }>();
 
 const isEdit = computed(() => props.article !== null);
 
 const form = useForm({
+    locale: props.article?.locale ?? 'en',
+    translate_of: props.article?.translate_of ?? null,
     title: props.article?.title ?? '',
     slug: props.article?.slug ?? '',
     category: props.article?.category ?? '',
@@ -41,6 +54,10 @@ const form = useForm({
     status: props.article?.status ?? 'draft',
     published_at: props.article?.published_at ?? '',
 });
+
+// You can only link to a translation written in a different locale.
+const linkOptions = computed(() => props.linkable.filter((a) => a.locale !== form.locale));
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -68,6 +85,26 @@ const inputClass =
             <div class="flex items-center justify-between gap-4">
                 <h1 class="text-xl font-semibold">{{ isEdit ? 'Edit article' : 'New article' }}</h1>
                 <Link :href="route('admin.articles.index')" class="text-sm text-muted-foreground hover:underline">← Back</Link>
+            </div>
+
+            <!-- Language & translation link -->
+            <div class="grid gap-5 rounded-xl border border-sidebar-border/70 p-5 sm:grid-cols-2 dark:border-sidebar-border">
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Language</label>
+                    <select v-model="form.locale" :class="inputClass">
+                        <option v-for="(label, key) in locales" :key="key" :value="key">{{ label }}</option>
+                    </select>
+                    <InputError :message="form.errors.locale" class="mt-1" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Translation of <span class="font-normal text-muted-foreground">(optional)</span></label>
+                    <select v-model="form.translate_of" :class="inputClass">
+                        <option :value="null">— Standalone —</option>
+                        <option v-for="a in linkOptions" :key="a.id" :value="a.id">{{ locales[a.locale] }} · {{ a.title }}</option>
+                    </select>
+                    <p class="mt-1 text-xs text-muted-foreground">Link this to the same article in the other language so readers can switch between them.</p>
+                    <InputError :message="form.errors.translate_of" class="mt-1" />
+                </div>
             </div>
 
             <!-- Title -->

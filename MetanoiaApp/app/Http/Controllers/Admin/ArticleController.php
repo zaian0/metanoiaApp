@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ArticleRequest;
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,6 +26,7 @@ class ArticleController extends Controller
             'id' => $a->id,
             'title' => $a->title,
             'slug' => $a->slug,
+            'locale' => $a->locale,
             'category' => $a->category,
             'status' => $a->status,
             'published_at' => $a->published_at?->format('Y-m-d'),
@@ -35,6 +37,7 @@ class ArticleController extends Controller
             'articles' => $articles,
             'filters' => ['status' => $status],
             'statuses' => Article::STATUSES,
+            'locales' => Article::LOCALES,
             'counts' => collect(Article::STATUSES)->keys()->mapWithKeys(
                 fn ($s) => [$s => Article::where('status', $s)->count()]
             ),
@@ -48,6 +51,8 @@ class ArticleController extends Controller
             'article' => null,
             'statuses' => Article::STATUSES,
             'categories' => Article::CATEGORIES,
+            'locales' => Article::LOCALES,
+            'linkable' => $this->linkable(),
         ]);
     }
 
@@ -60,9 +65,17 @@ class ArticleController extends Controller
 
     public function edit(Article $article): Response
     {
+        // Pre-select the existing translation in the other locale, if linked.
+        $otherLocale = $article->locale === 'ar' ? 'en' : 'ar';
+        $sibling = $article->group_id
+            ? Article::where('group_id', $article->group_id)->where('id', '!=', $article->id)->where('locale', $otherLocale)->first()
+            : null;
+
         return Inertia::render('admin/ArticleForm', [
             'article' => [
                 'id' => $article->id,
+                'locale' => $article->locale,
+                'translate_of' => $sibling?->id,
                 'title' => $article->title,
                 'slug' => $article->slug,
                 'category' => $article->category,
@@ -77,6 +90,8 @@ class ArticleController extends Controller
             ],
             'statuses' => Article::STATUSES,
             'categories' => Article::CATEGORIES,
+            'locales' => Article::LOCALES,
+            'linkable' => $this->linkable($article->id),
         ]);
     }
 
@@ -94,21 +109,41 @@ class ArticleController extends Controller
         return redirect()->route('admin.articles.index')->with('success', 'Article deleted.');
     }
 
-    /** Normalize the validated input: auto-slug, default publish date, default author. */
+    /** Articles that can be linked as a translation (id, title, locale). */
+    private function linkable(?int $exceptId = null): \Illuminate\Support\Collection
+    {
+        return Article::query()
+            ->when($exceptId, fn ($q) => $q->where('id', '!=', $exceptId))
+            ->orderByDesc('updated_at')
+            ->get(['id', 'title', 'locale', 'group_id'])
+            ->map(fn (Article $a) => ['id' => $a->id, 'title' => $a->title, 'locale' => $a->locale, 'group_id' => $a->group_id]);
+    }
+
+    /** Normalize input: auto-slug, default publish date/author, and resolve the translation group. */
     private function payload(ArticleRequest $request, ?Article $article = null): array
     {
         $data = $request->validated();
 
-        $data['slug'] = $data['slug']
+        $data['slug'] = ! empty($data['slug'])
             ? Article::uniqueSlug($data['slug'], $article?->id)
             : Article::uniqueSlug($data['title'], $article?->id);
 
-        // Stamp a publish date when an article goes live without one set.
         if ($data['status'] === 'published' && empty($data['published_at'])) {
             $data['published_at'] = now();
         }
 
         $data['author'] = $data['author'] ?: 'Metanoia Energy';
+
+        // Resolve the translation group: link to the chosen article's group, keep the
+        // current one on edit, or start a fresh group for a brand-new article.
+        $translateOf = $data['translate_of'] ?? null;
+        unset($data['translate_of']);
+
+        if ($translateOf && ($target = Article::find($translateOf))) {
+            $data['group_id'] = $target->group_id ?: (string) Str::uuid();
+        } else {
+            $data['group_id'] = $article?->group_id ?: (string) Str::uuid();
+        }
 
         return $data;
     }

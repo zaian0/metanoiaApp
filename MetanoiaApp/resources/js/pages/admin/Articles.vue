@@ -8,6 +8,7 @@ interface Row {
     id: number;
     title: string;
     slug: string;
+    locale: string;
     category: string | null;
     status: string;
     published_at: string | null;
@@ -22,6 +23,7 @@ defineProps<{
     articles: Paginated;
     filters: { status: string | null };
     statuses: Record<string, string>;
+    locales: Record<string, string>;
     counts: Record<string, number>;
     total: number;
 }>();
@@ -78,6 +80,7 @@ const destroy = (row: Row) => {
                     <thead class="border-b border-sidebar-border/70 bg-muted/50 text-left text-xs uppercase text-muted-foreground dark:border-sidebar-border">
                         <tr>
                             <th class="px-4 py-3 font-medium">Title</th>
+                            <th class="px-4 py-3 font-medium">Lang</th>
                             <th class="hidden px-4 py-3 font-medium sm:table-cell">Category</th>
                             <th class="hidden px-4 py-3 font-medium md:table-cell">Published</th>
                             <th class="hidden px-4 py-3 font-medium lg:table-cell">Updated</th>
@@ -90,6 +93,9 @@ const destroy = (row: Row) => {
                             <td class="px-4 py-3">
                                 <p class="font-medium">{{ a.title }}</p>
                                 <p class="text-xs text-muted-foreground">/{{ a.slug }}</p>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="rounded border border-sidebar-border/70 px-1.5 py-0.5 text-xs font-medium uppercase text-muted-foreground dark:border-sidebar-border">{{ a.locale }}</span>
                             </td>
                             <td class="hidden px-4 py-3 sm:table-cell">{{ a.category || '—' }}</td>
                             <td class="hidden whitespace-nowrap px-4 py-3 text-muted-foreground md:table-cell">{{ a.published_at || '—' }}</td>
@@ -106,7 +112,7 @@ const destroy = (row: Row) => {
                             </td>
                         </tr>
                         <tr v-if="!articles.data.length">
-                            <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">
+                            <td colspan="7" class="px-4 py-12 text-center text-muted-foreground">
                                 No articles yet. <Link :href="route('admin.articles.create')" class="text-brand-blue hover:underline">Write your first one →</Link>
                             </td>
                         </tr>
